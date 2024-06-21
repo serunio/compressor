@@ -8,8 +8,12 @@
 #include <stdio.h>
 #include "tree.h"
 
-void read(FILE*, Node_p*);
+void getFrequencies(FILE* in, Node_p* array);
 
-void write(FILE*, Node_p*);
+void writeCompressed(FILE* in, Node_p* array);
+
+void getDepths(FILE* in, Node_p* array);
+
+void writeDecompressed(FILE* in, Node_p* array);
 
 #endif //HUFFMAN_FILES_H

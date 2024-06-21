@@ -23,16 +23,12 @@ void compress(char* plik)
     }
     int size = 256;
     FILE* in = fopen(plik, "rb");
-    read(in, array);
+    getFrequencies(in, array);
     clearArrays(tree, array, &size);
     sortArray(tree, size, compareFrequency);
     buildTree(tree, &size);
-    printCodes(array, 256);
-    write(in, array);
-    sortArray(array, 256, compareFrequency);
-    for( int i = 0; i < 256; i++)
-    {
-        printf("%3d %s\n", array[i]->symbol, array[i]->bitCode);
-    }
+    calculateDepth(array, 256);
+    generateCodes(array, 256);
+    writeCompressed(in, array);
 }
 #endif //HUFFMAN_COMPRESS_H

@@ -10,6 +10,8 @@ Node_p newNode()
 {
     Node_p n = malloc(sizeof(Node));
     n->parent = NULL;
+    n->depth = 0;
+    n->bitCode = strdup("");
     return n;
 }
 
@@ -23,7 +25,15 @@ int compareFrequency(const Node_p* a, const Node_p* b)
     return (*b)->frequency - (*a)->frequency;
 }
 
-int compareSymbols(const Node_p* a, const Node_p* b)
+int compareDepth(const Node_p* a, const Node_p* b)
+{
+    int result;
+    if((result = (*a)->depth - (*b)->depth) == 0)
+        result = (*a)->symbol - (*b)->symbol;
+    return result;
+}
+
+int compareSymbol(const Node_p* a, const Node_p* b)
 {
     return (*a)->symbol - (*b)->symbol;
 }
@@ -31,17 +41,13 @@ int compareSymbols(const Node_p* a, const Node_p* b)
 void addToArray(Node_p* array, int* size, Node_p node)
 {
     for(int i = 0; i <= *size; i++)
-    {
         if (array[i]->frequency <= node->frequency)
         {
             for(int j = *size-i-1; j >= 0;j--)
-            {
                 array[j+i+1] = array[j+i];
-            }
             array[i] = node;
             break;
         }
-    }
     (*size)++;
 }
 
@@ -49,29 +55,12 @@ void removeFromArray(Node_p* array, int* size, Node_p pattern)
 {
     int i;
     for(i = 0; i < *size; i++)
-    {
         if(array[i]->symbol == pattern->symbol)
             break;
-    }
     for(i; i < *size; i++)
-    {
         if(i != *size-1)
             array[i] = array[i+1];
-    }
     (*size)--;
-
-}
-
-void printArray(Node_p* array, int size)
-{
-    printf("[ ");
-    for(int i = 0; i < size; i++)
-        printf("%d ", array[i]->frequency);
-    printf("]\n[ ");
-    for(int i = 0; i < size; i++)
-        printf("%c ", array[i]->symbol);
-    printf("]\n\n");
-
 }
 
 void buildTree(Node_p* array, int* size)
@@ -97,41 +86,65 @@ void buildTree(Node_p* array, int* size)
         removeFromArray(array, size, a);
         removeFromArray(array, size, b);
         addToArray(array, size, n);
-        //printArray(array, *size);
     }
 }
 
-void printCodes(Node_p* array, int size)
+void calculateDepth(Node_p* array, int size)
 {
     Node_p temp;
-    char code[257];
-    code[256] = '\0';
+    Node_p node;
     for(int i = 0; i < size; i++)
     {
-        temp = array[i];
-        //printf("%c ", array[i]->symbol);
-        int j = 0;
+        node = temp = array[i];
         while(temp->parent != NULL)
         {
-            code[255-j] = (char)(temp->bit + '0');
+            node->depth++;
             temp = temp->parent;
-            j++;
         }
-        j--;
-        //printf("%s\n", &code[255-j]);
-        array[i]->bitCode = strdup(&code[255-j]);
     }
+}
+
+void generateCodes(Node_p* array, int size)
+{
+    sortArray(array, size, compareDepth);
+
+    int i = 0;
+    while(array[i]->depth == 0)
+        i++;
+    int length = array[i]->depth;
+    char* code = malloc(length+1);
+    for(int k = 0; k < length; k++)
+        code[k] = '0';
+    code[length] = '\0';
+    array[i]->bitCode = strdup(code);
+    for(i++; i < 256; i++)
+    {
+        for(int j = length-1; j >= 0; j--)
+        {
+            if(code[j] == '0')
+            {
+                code[j] = '1';
+                break;
+            }
+            else if(code[j] == '1')
+                code[j] = '0';
+        }
+
+        if(array[i]->depth > length)
+        {
+            strcat(code, "0");
+            length++;
+        }
+        array[i]->bitCode = strdup(code);
+    }
+
+    //free(code);
+    sortArray(array, size, compareSymbol);
 }
 
 void clearArrays(Node_p* t, Node_p* a, int* size)
 {
-
     for(int i = 0; i < *size; i++)
-    {
         if(t[i]->frequency==0)
-        {
-            removeFromArray(t, size, t[i]);
-            i--;
-        }
-    }
+            removeFromArray(t, size, t[i--]);
 }
