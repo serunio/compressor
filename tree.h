@@ -39,7 +39,7 @@ void printCodes(Node_p*, int size);
 void calculateDepth(Node_p* array, int size);
 void generateCodes(Node_p* array, int size);
 
-void clearArrays(Node_p*, Node_p*, int* size);
+void clearArray(Node_p*, int* size);
 
 
 #endif //HUFFMAN_TREE_H

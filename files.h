@@ -8,12 +8,12 @@
 #include <stdio.h>
 #include "tree.h"
 
-void getFrequencies(FILE* in, Node_p* array);
+void getFrequencies(const unsigned char* in, int size, Node_p* array);
 
-void writeCompressed(FILE* in, Node_p* array);
+unsigned char* writeCompressed(const unsigned char* in, int* size, Node_p* array);
 
 void getDepths(FILE* in, Node_p* array);
 
-void writeDecompressed(FILE* in, Node_p* array);
+unsigned char* decodeHuffman(unsigned char* in, Node_p* array, int* symbolCount);
 
 #endif //HUFFMAN_FILES_H

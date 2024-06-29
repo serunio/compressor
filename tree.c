@@ -3,7 +3,6 @@
 //
 #include "tree.h"
 #include <stdlib.h>
-#include <stdio.h>
 #include <string.h>
 
 Node_p newNode()
@@ -28,7 +27,7 @@ int compareFrequency(const Node_p* a, const Node_p* b)
 int compareDepth(const Node_p* a, const Node_p* b)
 {
     int result;
-    if((result = (*a)->depth - (*b)->depth) == 0)
+    if((result = (*b)->depth - (*a)->depth) == 0)
         result = (*a)->symbol - (*b)->symbol;
     return result;
 }
@@ -104,21 +103,63 @@ void calculateDepth(Node_p* array, int size)
     }
 }
 
+//void generateCodes(Node_p* array, int size)
+//{
+//    sortArray(array, size, compareDepth);
+//
+//    int i = 0;
+//    while(array[i]->depth == 0)
+//        i++;
+//    int length = array[i]->depth;
+//    char* code = malloc(length+1);
+//    for(int k = 0; k < length; k++)
+//        code[k] = '0';
+//    code[length] = '\0';
+//    array[i]->bitCode = strdup(code);
+//    for(i++; i < 256; i++)
+//    {
+//        for(int j = length-1; j >= 0; j--)
+//        {
+//            if(code[j] == '0')
+//            {
+//                code[j] = '1';
+//                break;
+//            }
+//            else if(code[j] == '1')
+//                code[j] = '0';
+//        }
+//
+//        if(array[i]->depth > length)
+//        {
+//            strcat(code, "0");
+//            length++;
+//        }
+//        array[i]->bitCode = strdup(code);
+//    }
+//
+//    //free(code);
+//    sortArray(array, size, compareSymbol);
+//}
+
 void generateCodes(Node_p* array, int size)
 {
     sortArray(array, size, compareDepth);
 
     int i = 0;
-    while(array[i]->depth == 0)
-        i++;
     int length = array[i]->depth;
     char* code = malloc(length+1);
     for(int k = 0; k < length; k++)
         code[k] = '0';
     code[length] = '\0';
     array[i]->bitCode = strdup(code);
-    for(i++; i < 256; i++)
+    for(i++; array[i]->depth > 0; i++)
     {
+        if(array[i]->depth < length)
+        {
+            while(length != array[i]->depth)
+                code[--length] = '\0';
+        }
+
         for(int j = length-1; j >= 0; j--)
         {
             if(code[j] == '0')
@@ -129,12 +170,6 @@ void generateCodes(Node_p* array, int size)
             else if(code[j] == '1')
                 code[j] = '0';
         }
-
-        if(array[i]->depth > length)
-        {
-            strcat(code, "0");
-            length++;
-        }
         array[i]->bitCode = strdup(code);
     }
 
@@ -142,7 +177,7 @@ void generateCodes(Node_p* array, int size)
     sortArray(array, size, compareSymbol);
 }
 
-void clearArrays(Node_p* t, Node_p* a, int* size)
+void clearArray(Node_p* t, int* size)
 {
     for(int i = 0; i < *size; i++)
         if(t[i]->frequency==0)

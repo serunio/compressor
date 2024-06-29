@@ -12,4 +12,8 @@ add_executable(huffman main.c
         byte.h
         compress.h
         decompress.h
+        BWT.c
+        BWT.h
+        MTF.c
+        MTF.h
 )

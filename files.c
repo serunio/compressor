@@ -7,38 +7,41 @@
 #include <string.h>
 #include <stdlib.h>
 
-void getFrequencies(FILE* in, Node_p* array)
+void getFrequencies(const unsigned char* in, int size, Node_p* array)
 {
-    int c;
-    while((c = getc(in)) != EOF)
-    {
-        array[c]->frequency++;
-    }
+    for(int i = 0; i < size; i++)
+        array[in[i]]->frequency++;
 }
 
-void writeCompressed(FILE* in, Node_p* array)
+unsigned char* writeCompressed(const unsigned char* in, int* oldSize, Node_p* array)
 {
-    rewind(in);
-    FILE* out = fopen("compressed.bin", "wb");
-    for(int i = 0; i < 256; i++)
-        fprintf(out, "%c", array[i]->depth);
-    int c, i, result;
+    int size = (*oldSize);
+    //FILE* out = fopen("compressed.bin", "wb");
+    unsigned char* outt = malloc((257+size)*sizeof(unsigned char));
+
+    outt[size+256] = '\0';
+    int i, result, outputtedByteCount = 0;
+    for(i = 0; i < 256; i++)
+        //fprintf(out, "%c", array[i]->depth);
+        outt[outputtedByteCount++] = (unsigned char)array[i]->depth;
     char bin;
     byte b;
     b = newByte();
-    while((c = getc(in)) != EOF)
+    for(int j = 0 ; j < size; j++)
     {
         i = 0;
         while(true)
         {
-            bin = array[c]->bitCode[i++];
+            bin = array[in[j]]->bitCode[i++];
             if(bin == '\0')
                 break;
             result = addToByte(&b, bin);
 
             if(result == 2)
             {
-                fprintf(out, "%c", b.c);
+                //fprintf(out, "%c", b.c);
+                outt[outputtedByteCount++] = b.c;
+
                 b = newByte();
             }
         }
@@ -46,14 +49,18 @@ void writeCompressed(FILE* in, Node_p* array)
 
     if(addToByte(&b, '1') == 2)
     {
-        fprintf(out, "%c", b.c);
+        //fprintf(out, "%c", b.c);
+        outt[outputtedByteCount++] = b.c;
         b = newByte();
     }
     while(!isFull(&b))
     {
         addToByte(&b, '0');
     }
-    fprintf(out, "%c", b.c);
+    //fprintf(out, "%c", b.c);
+    outt[outputtedByteCount++] = b.c;
+    *oldSize = outputtedByteCount;
+    return outt;
 }
 
 void getDepths(FILE* in, Node_p* array)
@@ -62,36 +69,37 @@ void getDepths(FILE* in, Node_p* array)
         array[i]->depth = getc(in);
 }
 
-void writeDecompressed(FILE* in, Node_p* array)
+unsigned char* decodeHuffman(unsigned char* in, Node_p* array, int* inputSymbolCount)
 {
-    FILE* out = fopen("decompressed.txt", "wb");
-    int byteI;
+    unsigned char* out;
+    int newSymbolCount = 0;
     unsigned char byte;
     unsigned char bit;
     char* code = strdup("");
 
-    int bitCount = 0;
-    while(getc(in) != EOF)
-        bitCount++;
-    bitCount *= 8;
-    fseek(in, -1, SEEK_CUR);
-    byteI = getc(in);
-    byte = (unsigned char)byteI;
-    do {
+    int bitCount = 8*(*inputSymbolCount - 256);
+
+    byte = in[*inputSymbolCount-1];
+    for(int i = 0; i < 8; i++) {
         bit = byte & (char)1;
         byte = byte >> 1;
         bitCount--;
-    } while(bit == 0);
+        if(bit == 1)
+            goto a;
+    }
+    bitCount--;
+a:
+    out = malloc(bitCount*sizeof(char));
 
-    fseek(in, 256, SEEK_SET);
-    while((byteI = getc(in)) != EOF)
+    for(int j = 256; true; j++)
     {
-        byte = (unsigned char)byteI;
+        byte = in[j];
         for(int i = 0; i < 8; i++)
         {
-            bit = byte & (char)128;
+            bit = byte >> 7;
             byte = byte << 1;
-            if(bit == 128)
+
+            if(bit == 1)
                 strcat(code, "1");
             else if(bit == 0)
                 strcat(code, "0");
@@ -99,13 +107,20 @@ void writeDecompressed(FILE* in, Node_p* array)
             {
                 if(!strcmp(code, array[j]->bitCode))
                 {
-                    fprintf(out, "%c", array[j]->symbol);
+                    out[newSymbolCount] = array[j]->symbol;
                     code = strdup("");
+                    newSymbolCount++;
                     break;
                 }
             }
             if(!bitCount--)
-                return;
+            {
+                newSymbolCount--;
+                *inputSymbolCount = newSymbolCount;
+                return out;
+            }
         }
     }
+//    *inputSymbolCount = newSymbolCount;
+//    return out;
 }
