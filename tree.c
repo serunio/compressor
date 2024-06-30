@@ -56,7 +56,7 @@ void removeFromArray(Node_p* array, int* size, Node_p pattern)
     for(i = 0; i < *size; i++)
         if(array[i]->symbol == pattern->symbol)
             break;
-    for(i; i < *size; i++)
+    for(; i < *size; i++)
         if(i != *size-1)
             array[i] = array[i+1];
     (*size)--;
@@ -73,14 +73,8 @@ void buildTree(Node_p* array, int* size)
         n->frequency = a->frequency + b->frequency;
         n->symbol = a->symbol;
 
-        a->bit = 0;
-        b->bit = 1;
-
         a->parent = n;
         b->parent = n;
-
-        n->left = a;
-        n->right = b;
 
         removeFromArray(array, size, a);
         removeFromArray(array, size, b);

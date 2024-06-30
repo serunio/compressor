@@ -46,6 +46,6 @@ void compress(char* plik)
     for(i = 0; i < fileSize; i++)
         fprintf(output, "%c", out[i]);
 
-    free(out);
+    //free(out);
 }
 #endif //HUFFMAN_COMPRESS_H

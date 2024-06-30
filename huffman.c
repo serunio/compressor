@@ -48,12 +48,12 @@ void getFrequencies(const unsigned char* in, int size, Node_p* array)
 unsigned char* encode(const unsigned char* in, int* oldSize, Node_p* array)
 {
     int size = (*oldSize);
-    unsigned char* outt = malloc((257+size)*sizeof(unsigned char));
+    unsigned char* out = malloc((257 + size) * sizeof(unsigned char));
 
-    outt[size+256] = '\0';
+    out[size + 256] = '\0';
     int i, result, outputtedByteCount = 0;
     for(i = 0; i < 256; i++)
-        outt[outputtedByteCount++] = (unsigned char)array[i]->depth;
+        out[outputtedByteCount++] = (unsigned char)array[i]->depth;
     char bin;
     byte b;
     b = newByte();
@@ -69,7 +69,7 @@ unsigned char* encode(const unsigned char* in, int* oldSize, Node_p* array)
 
             if(result == 2)
             {
-                outt[outputtedByteCount++] = b.c;
+                out[outputtedByteCount++] = b.c;
 
                 b = newByte();
             }
@@ -78,16 +78,16 @@ unsigned char* encode(const unsigned char* in, int* oldSize, Node_p* array)
 
     if(addToByte(&b, '1') == 2)
     {
-        outt[outputtedByteCount++] = b.c;
+        out[outputtedByteCount++] = b.c;
         b = newByte();
     }
     while(!isFull(&b))
     {
         addToByte(&b, '0');
     }
-    outt[outputtedByteCount++] = b.c;
+    out[outputtedByteCount++] = b.c;
     *oldSize = outputtedByteCount;
-    return outt;
+    return out;
 }
 
 void getDepths(FILE* in, Node_p* array)

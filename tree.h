@@ -11,10 +11,7 @@ typedef struct Node {
     unsigned char symbol;
     int frequency;
     int depth;
-    struct Node* left;
-    struct Node* right;
     struct Node* parent;
-    char bit;
     char* bitCode;
 
 } *Node_p, Node;
