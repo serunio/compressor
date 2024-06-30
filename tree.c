@@ -103,44 +103,6 @@ void calculateDepth(Node_p* array, int size)
     }
 }
 
-//void generateCodes(Node_p* array, int size)
-//{
-//    sortArray(array, size, compareDepth);
-//
-//    int i = 0;
-//    while(array[i]->depth == 0)
-//        i++;
-//    int length = array[i]->depth;
-//    char* code = malloc(length+1);
-//    for(int k = 0; k < length; k++)
-//        code[k] = '0';
-//    code[length] = '\0';
-//    array[i]->bitCode = strdup(code);
-//    for(i++; i < 256; i++)
-//    {
-//        for(int j = length-1; j >= 0; j--)
-//        {
-//            if(code[j] == '0')
-//            {
-//                code[j] = '1';
-//                break;
-//            }
-//            else if(code[j] == '1')
-//                code[j] = '0';
-//        }
-//
-//        if(array[i]->depth > length)
-//        {
-//            strcat(code, "0");
-//            length++;
-//        }
-//        array[i]->bitCode = strdup(code);
-//    }
-//
-//    //free(code);
-//    sortArray(array, size, compareSymbol);
-//}
-
 void generateCodes(Node_p* array, int size)
 {
     sortArray(array, size, compareDepth);
@@ -173,7 +135,7 @@ void generateCodes(Node_p* array, int size)
         array[i]->bitCode = strdup(code);
     }
 
-    //free(code);
+    free(code);
     sortArray(array, size, compareSymbol);
 }
 

@@ -7,7 +7,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "files.h"
+#include <string.h>
+#include "huffman.h"
 #include "tree.h"
 #include "BWT.h"
 #include "MTF.h"
@@ -24,10 +25,9 @@ void compress(char* plik)
     unsigned char* out = malloc((1+fileSize) * sizeof(char));
     unsigned  char* temp;
 
-    int i = 0;
-    int c;
+    int i = 0, c;
     while ( (c = getc(in)) != EOF)
-        out[i++] = (char)c;
+        out[i++] = (unsigned char)c;
     rewind(in);
     out[fileSize] = '\0';
 
@@ -39,29 +39,10 @@ void compress(char* plik)
     free(out);
     out = temp;
 
-    Node_p* tree = malloc(256 * sizeof(Node_p));
-    Node_p* array = malloc(256 * sizeof(Node_p));
-    for(i = 0; i<256; i++)
-    {
-        tree[i] = newNode();
-        tree[i]->frequency = 0;//rand()%20;
-        tree[i]->symbol = (char)i;
-        array[i] = tree[i];
-    }
-    int size = 256;
+    out = huffman(out, &fileSize);
 
-    getFrequencies(out, fileSize, array);
-    clearArray(tree, &size);
-    sortArray(tree, size, compareFrequency);
-    buildTree(tree, &size);
-    calculateDepth(array, 256);
-    generateCodes(array, 256);
-
-    temp = writeCompressed(out, &fileSize, array);
-    free(out);
-    out = temp;
-
-    FILE* output = fopen("compressed.bin", "wb");
+    plik = strcat(plik, ".cmp");
+    FILE* output = fopen(plik, "wb");
     for(i = 0; i < fileSize; i++)
         fprintf(output, "%c", out[i]);
 

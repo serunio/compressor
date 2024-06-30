@@ -8,14 +8,16 @@
 
 int length;
 unsigned  char* lastSymbol;
-unsigned char* BWT(unsigned char* contents, int* oldFileSize)
+unsigned char* BWT(unsigned char* input, int* oldFileSize)
 {
     int fileSize = *oldFileSize;
     length = fileSize;
     unsigned char* output = malloc(4+fileSize);
     unsigned char** array = malloc(fileSize*sizeof(unsigned char*));
+    unsigned char* contents = malloc(2*fileSize*sizeof(unsigned char));
     for(int i = 0; i < fileSize; i++ )
     {
+        contents[i] = contents[i+fileSize] = input[i];
         array[i] = &(contents[i]);
     }
     output[fileSize+3] = '\0';
@@ -81,19 +83,7 @@ unsigned char* decodeBWT(unsigned char* input, int* oldFileSize)
 
 int sortPointers(const unsigned char** a, const unsigned char** b)
 {
-    int result = 0;
-    int i = 0, ia = 0, ib = 0;
-    while(1){
-        if(result == 0)
-            result = a[0][i-ia] - b[0][i-ib];
-        else break;
-        if(ia == 0 && &a[0][i] == lastSymbol)
-            ia = length;
-        if(ib == 0 && &b[0][i] == lastSymbol)
-            ib = length;
-        i++;
-    }
-    return result;
+    return strcmp( (const char *)*a, (const char *)*b);
 }
 
 int sortFirstColumn(const int** a, const int** b)

@@ -2,10 +2,42 @@
 // Created by x7kub on 19.06.2024.
 //
 
-#include "files.h"
+#include "huffman.h"
 #include "byte.h"
 #include <string.h>
 #include <stdlib.h>
+
+unsigned char* huffman(unsigned char* in, int* oldSize)
+{
+    int fileSize = *oldSize;
+    unsigned char* temp;
+    Node_p* tree = malloc(256 * sizeof(Node_p));
+    Node_p* array = malloc(256 * sizeof(Node_p));
+    for(int i = 0; i<256; i++)
+    {
+        tree[i] = newNode();
+        tree[i]->frequency = 0;//rand()%20;
+        tree[i]->symbol = (char)i;
+        array[i] = tree[i];
+    }
+    int size = 256;
+
+    getFrequencies(in, fileSize, array);
+    clearArray(tree, &size);
+    sortArray(tree, size, compareFrequency);
+    buildTree(tree, &size);
+    calculateDepth(array, 256);
+    generateCodes(array, 256);
+
+    temp = encode(in, &fileSize, array);
+    free(in);
+    in = temp;
+
+    free(temp);
+    free(array);
+    *oldSize = fileSize;
+    return in;
+}
 
 void getFrequencies(const unsigned char* in, int size, Node_p* array)
 {
@@ -13,16 +45,14 @@ void getFrequencies(const unsigned char* in, int size, Node_p* array)
         array[in[i]]->frequency++;
 }
 
-unsigned char* writeCompressed(const unsigned char* in, int* oldSize, Node_p* array)
+unsigned char* encode(const unsigned char* in, int* oldSize, Node_p* array)
 {
     int size = (*oldSize);
-    //FILE* out = fopen("compressed.bin", "wb");
     unsigned char* outt = malloc((257+size)*sizeof(unsigned char));
 
     outt[size+256] = '\0';
     int i, result, outputtedByteCount = 0;
     for(i = 0; i < 256; i++)
-        //fprintf(out, "%c", array[i]->depth);
         outt[outputtedByteCount++] = (unsigned char)array[i]->depth;
     char bin;
     byte b;
@@ -39,7 +69,6 @@ unsigned char* writeCompressed(const unsigned char* in, int* oldSize, Node_p* ar
 
             if(result == 2)
             {
-                //fprintf(out, "%c", b.c);
                 outt[outputtedByteCount++] = b.c;
 
                 b = newByte();
@@ -49,7 +78,6 @@ unsigned char* writeCompressed(const unsigned char* in, int* oldSize, Node_p* ar
 
     if(addToByte(&b, '1') == 2)
     {
-        //fprintf(out, "%c", b.c);
         outt[outputtedByteCount++] = b.c;
         b = newByte();
     }
@@ -57,7 +85,6 @@ unsigned char* writeCompressed(const unsigned char* in, int* oldSize, Node_p* ar
     {
         addToByte(&b, '0');
     }
-    //fprintf(out, "%c", b.c);
     outt[outputtedByteCount++] = b.c;
     *oldSize = outputtedByteCount;
     return outt;
@@ -69,7 +96,7 @@ void getDepths(FILE* in, Node_p* array)
         array[i]->depth = getc(in);
 }
 
-unsigned char* decodeHuffman(unsigned char* in, Node_p* array, int* inputSymbolCount)
+unsigned char* decode(unsigned char* in, Node_p* array, int* symbolCount)
 {
     unsigned char* out;
     int newSymbolCount = 0;
@@ -77,9 +104,9 @@ unsigned char* decodeHuffman(unsigned char* in, Node_p* array, int* inputSymbolC
     unsigned char bit;
     char* code = strdup("");
 
-    int bitCount = 8*(*inputSymbolCount - 256);
+    int bitCount = 8*(*symbolCount - 256);
 
-    byte = in[*inputSymbolCount-1];
+    byte = in[*symbolCount - 1];
     for(int i = 0; i < 8; i++) {
         bit = byte & (char)1;
         byte = byte >> 1;
@@ -91,9 +118,9 @@ unsigned char* decodeHuffman(unsigned char* in, Node_p* array, int* inputSymbolC
 a:
     out = malloc(bitCount*sizeof(char));
 
-    for(int j = 256; true; j++)
+    for(int k = 256; true; k++)
     {
-        byte = in[j];
+        byte = in[k];
         for(int i = 0; i < 8; i++)
         {
             bit = byte >> 7;
@@ -116,7 +143,7 @@ a:
             if(!bitCount--)
             {
                 newSymbolCount--;
-                *inputSymbolCount = newSymbolCount;
+                *symbolCount = newSymbolCount;
                 return out;
             }
         }

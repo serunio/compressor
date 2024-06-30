@@ -8,7 +8,7 @@
 void decompress(char* plik)
 {
     FILE* in = fopen(plik, "rb");
-    FILE* output = fopen("decompressed.txt", "wb");
+
     Node_p* array = malloc(256 * sizeof(Node_p));
     unsigned char* out;
     unsigned char* temp;
@@ -29,7 +29,7 @@ void decompress(char* plik)
     while((c = getc(in)) != EOF)
         out[i++] = c;
 
-    temp = decodeHuffman(out, array, &fileSize);
+    temp = decode(out, array, &fileSize);
     free(out);
     out = temp;
 
@@ -41,6 +41,8 @@ void decompress(char* plik)
     free(out);
     out = temp;
 
+    plik = strcat(plik, "_decmp.txt");
+    FILE* output = fopen(plik, "wb");
     for(i = 0; i < fileSize; i++)
         fprintf(output, "%c", out[i]);
 }
