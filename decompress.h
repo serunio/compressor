@@ -27,6 +27,14 @@ void decompress(char* plik)
     free(out);
     out = temp;
 
+//    temp = decodeHuffman(out, &fileSize);
+//    free(out);
+//    out = temp;
+//
+//    temp = decodeMTF(out, fileSize);
+//    free(out);
+//    out = temp;
+
     temp = decodeBWT(out, &fileSize);
     free(out);
     out = temp;

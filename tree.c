@@ -112,7 +112,6 @@ void freeTree(Node_p node)
     free(node);
 }
 
-
 void generateCodes(Node_p* array, int size)
 {
     sortArray(array, size, compareDepth);
@@ -125,7 +124,7 @@ void generateCodes(Node_p* array, int size)
     code[length] = '\0';
     free(array[i]->bitCode);
     array[i]->bitCode = strdup(code);
-    for(i++; array[i]->depth > 0; i++)
+    for(i++; i < 256 && array[i]->depth > 0; i++)
     {
         if(array[i]->depth < length)
         {

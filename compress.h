@@ -41,6 +41,12 @@ void compress(char* plik)
 
     out = huffman(out, &fileSize);
 
+//    temp = MTF(out, fileSize);
+//    free(out);
+//    out = temp;
+//
+//    out = huffman(out, &fileSize);
+
     plik = strcat(plik, ".cmp");
     FILE* output = fopen(plik, "w");
     for(i = 0; i < fileSize; i++)
