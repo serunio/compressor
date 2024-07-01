@@ -16,7 +16,7 @@ unsigned char* huffman(unsigned char* in, int* oldSize)
     for(int i = 0; i<256; i++)
     {
         tree[i] = newNode();
-        tree[i]->frequency = 0;//rand()%20;
+        tree[i]->frequency = 0;
         tree[i]->symbol = (char)i;
         array[i] = tree[i];
     }
@@ -31,12 +31,32 @@ unsigned char* huffman(unsigned char* in, int* oldSize)
 
     temp = encode(in, &fileSize, array);
     free(in);
-    in = temp;
+    
+    freeTree(tree[0]);
+    free(tree);
+    freeArray(array);
 
-    free(temp);
-    free(array);
     *oldSize = fileSize;
-    return in;
+    return temp;
+}
+
+unsigned char* decodeHuffman(unsigned char* in, int* size)
+{
+    Node_p* array = malloc(256 * sizeof(Node_p));
+    unsigned char* temp;
+
+    for(int i = 0; i < 256; i++)
+    {
+        array[i] = newNode();
+        array[i]->symbol = (char)i;
+    }
+    getDepths(in, array);
+    generateCodes(array, 256);
+
+    temp = decode(in, array, size);
+
+    freeArray(array);
+    return temp;
 }
 
 void getFrequencies(const unsigned char* in, int size, Node_p* array)
@@ -70,7 +90,6 @@ unsigned char* encode(const unsigned char* in, int* oldSize, Node_p* array)
             if(result == 2)
             {
                 out[outputtedByteCount++] = b.c;
-
                 b = newByte();
             }
         }
@@ -90,19 +109,21 @@ unsigned char* encode(const unsigned char* in, int* oldSize, Node_p* array)
     return out;
 }
 
-void getDepths(FILE* in, Node_p* array)
+void getDepths(const unsigned char* in, Node_p* array)
 {
     for(int i = 0; i < 256; i++)
-        array[i]->depth = getc(in);
+        array[i]->depth = in[i];
 }
 
-unsigned char* decode(unsigned char* in, Node_p* array, int* symbolCount)
+unsigned char* decode(const unsigned char* in, Node_p* array, int* symbolCount)
 {
     unsigned char* out;
     int newSymbolCount = 0;
     unsigned char byte;
     unsigned char bit;
-    char* code = strdup("");
+    char code[256];
+    int codeSize = 0;
+    code[0] = '\0';
 
     int bitCount = 8*(*symbolCount - 256);
 
@@ -127,15 +148,15 @@ a:
             byte = byte << 1;
 
             if(bit == 1)
-                strcat(code, "1");
+                add(code, codeSize++, '1');
             else if(bit == 0)
-                strcat(code, "0");
+                add(code, codeSize++, '0');
             for(int j = 0; j < 256; j++)
             {
                 if(!strcmp(code, array[j]->bitCode))
                 {
                     out[newSymbolCount] = array[j]->symbol;
-                    code = strdup("");
+                    code[codeSize = 0] = '\0';
                     newSymbolCount++;
                     break;
                 }
@@ -148,6 +169,10 @@ a:
             }
         }
     }
-//    *inputSymbolCount = newSymbolCount;
-//    return out;
+}
+
+void add(char* a, int s, char c)
+{
+    a[s] = c;
+    a[s+1] = '\0';
 }

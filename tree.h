@@ -12,6 +12,8 @@ typedef struct Node {
     int frequency;
     int depth;
     struct Node* parent;
+    struct Node* left;
+    struct Node* right;
     char* bitCode;
 
 } *Node_p, Node;
@@ -35,5 +37,8 @@ void generateCodes(Node_p* array, int size);
 
 void clearArray(Node_p*, int* size);
 
+void freeTree(Node_p);
+
+void freeArray(Node_p* a);
 
 #endif //HUFFMAN_TREE_H

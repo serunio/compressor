@@ -10,7 +10,9 @@ byte newByte()
     byte* b = malloc(sizeof(byte));
     b->size = 0;
     b->c = 0;
-    return *b;
+    byte result = *b;
+    free(b);
+    return result;
 }
 
 int addToByte(byte* b, char c)

@@ -6,12 +6,11 @@
 #include <stdlib.h>
 #include <string.h>
 
-int length;
+
 unsigned  char* lastSymbol;
 unsigned char* BWT(unsigned char* input, int* oldFileSize)
 {
     int fileSize = *oldFileSize;
-    length = fileSize;
     unsigned char* output = malloc(4+fileSize);
     unsigned char** array = malloc(fileSize*sizeof(unsigned char*));
     unsigned char* contents = malloc(2*fileSize*sizeof(unsigned char));
@@ -43,6 +42,7 @@ unsigned char* BWT(unsigned char* input, int* oldFileSize)
         output[j-1] = (char)((lastSymbolNumber>>(32-(8*j))) & 0xff);
 
     free(array);
+    free(contents);
     (*oldFileSize) += 4;
     return output;
 }

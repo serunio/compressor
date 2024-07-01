@@ -9,6 +9,8 @@ Node_p newNode()
 {
     Node_p n = malloc(sizeof(Node));
     n->parent = NULL;
+    n->left = NULL;
+    n->right = NULL;
     n->depth = 0;
     n->bitCode = strdup("");
     return n;
@@ -76,6 +78,9 @@ void buildTree(Node_p* array, int* size)
         a->parent = n;
         b->parent = n;
 
+        n->left = a;
+        n->right = b;
+
         removeFromArray(array, size, a);
         removeFromArray(array, size, b);
         addToArray(array, size, n);
@@ -97,6 +102,17 @@ void calculateDepth(Node_p* array, int size)
     }
 }
 
+void freeTree(Node_p node)
+{
+    if(node->left->left != NULL)
+        freeTree(node->left);
+    if(node->right->right != NULL)
+        freeTree(node->right);
+    free(node->bitCode);
+    free(node);
+}
+
+
 void generateCodes(Node_p* array, int size)
 {
     sortArray(array, size, compareDepth);
@@ -107,6 +123,7 @@ void generateCodes(Node_p* array, int size)
     for(int k = 0; k < length; k++)
         code[k] = '0';
     code[length] = '\0';
+    free(array[i]->bitCode);
     array[i]->bitCode = strdup(code);
     for(i++; array[i]->depth > 0; i++)
     {
@@ -126,6 +143,7 @@ void generateCodes(Node_p* array, int size)
             else if(code[j] == '1')
                 code[j] = '0';
         }
+        free(array[i]->bitCode);
         array[i]->bitCode = strdup(code);
     }
 
@@ -137,5 +155,18 @@ void clearArray(Node_p* t, int* size)
 {
     for(int i = 0; i < *size; i++)
         if(t[i]->frequency==0)
+        {
             removeFromArray(t, size, t[i--]);
+        }
+
+}
+
+void freeArray(Node_p* a)
+{
+    for(int i = 0; i<256; i++)
+    {
+        free(a[i]->bitCode);
+        free(a[i]);
+    }
+    free(a);
 }

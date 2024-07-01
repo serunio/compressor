@@ -15,7 +15,7 @@
 
 void compress(char* plik)
 {
-    FILE* in = fopen(plik, "rb");
+    FILE* in = fopen(plik, "r");
 
     int fileSize = 0;
     while (getc(in) != EOF)
@@ -42,10 +42,12 @@ void compress(char* plik)
     out = huffman(out, &fileSize);
 
     plik = strcat(plik, ".cmp");
-    FILE* output = fopen(plik, "wb");
+    FILE* output = fopen(plik, "w");
     for(i = 0; i < fileSize; i++)
-        fprintf(output, "%c", out[i]);
+        fprintf( output, "%c", out[i]);
 
-    //free(out);
+    free(out);
+    fclose(in);
+    fclose(output);
 }
 #endif //HUFFMAN_COMPRESS_H

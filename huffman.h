@@ -12,10 +12,14 @@ void getFrequencies(const unsigned char* in, int size, Node_p* array);
 
 unsigned char* encode(const unsigned char* in, int* oldSize, Node_p* array);
 
-void getDepths(FILE* in, Node_p* array);
+void getDepths(const unsigned char* in, Node_p* array);
 
-unsigned char* decode(unsigned char* in, Node_p* array, int* symbolCount);
+unsigned char* decode(const unsigned char* in, Node_p* array, int* symbolCount);
 
 unsigned char* huffman(unsigned char* in, int* oldSize);
+
+unsigned char* decodeHuffman(unsigned char* in, int* size);
+
+void add(char* a, int s, char c);
 
 #endif //HUFFMAN_HUFFMAN_H
