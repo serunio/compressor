@@ -4,9 +4,8 @@
 
 #include "MTF.h"
 #include <stdlib.h>
-#include <stdio.h>
 
-unsigned char* MTF(unsigned char* in, int length)
+unsigned char* MTF(const unsigned char* in, int length)
 {
     unsigned char* output = malloc((length+1*sizeof(char)));
     unsigned char symbols[256];

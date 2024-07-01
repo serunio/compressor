@@ -5,7 +5,7 @@
 #ifndef HUFFMAN_MTF_H
 #define HUFFMAN_MTF_H
 
-unsigned char* MTF(unsigned char* in, int length);
+unsigned char* MTF(const unsigned char* in, int length);
 
 unsigned char* decodeMTF(unsigned char* in, int length);
 

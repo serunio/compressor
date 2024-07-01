@@ -19,7 +19,6 @@ unsigned char* BWT(unsigned char* input, int* oldFileSize)
         contents[i] = contents[i+fileSize] = input[i];
         array[i] = &(contents[i]);
     }
-    output[fileSize+3] = '\0';
     lastSymbol = array[fileSize-1];
     unsigned char* firstSymbol = array[0];
     unsigned int lastSymbolNumber = -1;
