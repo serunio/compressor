@@ -16,4 +16,5 @@ add_executable(huffman main.c
         BWT.h
         MTF.c
         MTF.h
+        LZ77.c
 )

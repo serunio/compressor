@@ -25,12 +25,13 @@ int main(int argc, char** argv) {
 
     if(!strcmp(tryb, "compress"))
     {
-        out = compress(out, fileSize);
+        out = compress(out, &fileSize);
+        //out = decompress(out, &fileSize);
         plik = strcat(plik, ".cmp");
     }
     else if(!strcmp(tryb, "decompress"))
     {
-        out = decompress(out, fileSize);
+        out = decompress(out, &fileSize);
         plik = strcat(plik, "_decmp.txt");
     }
     else return 1;

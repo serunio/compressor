@@ -121,7 +121,7 @@ unsigned char* decode(const unsigned char* in, Node_p* array, int* symbolCount)
     int newSymbolCount = 0;
     unsigned char byte;
     unsigned char bit;
-    char code[256];
+    char* code = malloc(256);
     int codeSize = 0;
     code[0] = '\0';
 
@@ -161,10 +161,11 @@ a:
                     break;
                 }
             }
-            if(!bitCount--)
+            if(!--bitCount)
             {
-                newSymbolCount--;
+                //newSymbolCount--;
                 *symbolCount = newSymbolCount;
+                free(code);
                 return out;
             }
         }

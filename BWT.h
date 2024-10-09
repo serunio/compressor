@@ -7,7 +7,7 @@
 
 #include <stdio.h>
 
-unsigned char* BWT(unsigned char* contents, int* fileSize);
+unsigned char* BWT(const unsigned char* contents, int* fileSize);
 
 unsigned char* decodeBWT(unsigned char* input, int* fileSize);
 

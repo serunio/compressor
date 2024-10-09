@@ -11,25 +11,32 @@
 #include "tree.h"
 #include "BWT.h"
 #include "MTF.h"
-unsigned char* compress(unsigned char* out, int fileSize)
+#include "LZ77.h"
+unsigned char* compress(unsigned char* out, int* fileSize)
 {
     unsigned char* temp;
 
-    temp = BWT(out, &fileSize);
+    temp = BWT(out, fileSize);
     free(out);
     out = temp;
 
-    temp = MTF(out, fileSize);
+    temp = MTF(out, *fileSize);
     free(out);
     out = temp;
 
-    out = huffman(out, &fileSize);
+    out = huffman(out, fileSize);
 
-//    temp = MTF(out, fileSize);
+//    temp = decodeHuffman(out, fileSize);
 //    free(out);
 //    out = temp;
 //
-//    out = huffman(out, &fileSize);
+//    temp = decodeMTF(out, *fileSize);
+//    free(out);
+//    out = temp;
+//
+//    temp = decodeBWT(out, fileSize);
+//    free(out);
+//    out = temp;
 
     return out;
 }
